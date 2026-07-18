@@ -2352,50 +2352,39 @@ LASTDRIVE=Z</textarea>
   }
 
   function _extractKey(src) {
-    const markers = [
-      // Boot screen text
+    // Check for presence of unique strings that only appear in specific contexts
+    // Returns a bitmask string — 1 if found, 0 if not
+    const checks = [
+      'Too much emotional storage.',
+      'I am watching everything you do.',
+      'Being a desktop pet is a serious profession.',
+      'That file had 47 viruses. You owe me.',
+      'Do NOT download that file!!',
+      'FREE Super Marvin 65 2026',
+      'Have a save file? Load it below',
       'Booting MikeOS: Amethyst',
-      'Starting Amethyst',
-      // Indigo normal dialog
-      'I miss Bonzi Buddy',
-      'I am watching everything you do',
-      'tiny purple creature',
-      'Being a desktop pet is a serious profession',
-      // Indigo Defender dialog
-      'That file had 47 viruses',
-      'WAIT WAIT WAIT',
-      // Indigo jokes
-      'Why did the floppy disk go to therapy',
-      'What do you call a computer that sings',
-      // Primary colors
-      '#7B2FBE',
-      '#EA580C',
-      // Preinstalled app names
-      "span>My Computer<",
-      "span>Notepad<",
-      "span>About Mike OS<",
-      // Store app names
+      'Starting AmethystGUI',
       "name:'Flappy Disk'",
       "name:'Hangman'",
       "name:'Connect 4'",
-      // AmethystIE pages
-      'amethyst://home',
-      'amethyst://freegames',
-      'FREE Super Marvin 65',
-      // Welcome screen
-      'Have a save file? Load it below',
+      "amethyst://freegames",
+      '#7B2FBE',
+      '#EA580C',
+      'My Computer',
+      'About Mike OS',
+      'MikeOS Defender',
+      'SuperMarvin65_2026_FREE_NODVIRUS_REAL',
+      'clipxp.com/modify',
     ];
-    return markers.map(function(m) {
-      const idx = src.indexOf(m);
-      if (idx === -1) return 'MISSING:' + m.slice(0, 15);
-      return src.slice(idx, idx + 60).replace(/\s+/g, ' ').trim();
-    }).join('|');
+    return checks.map(function(c) { return src.indexOf(c) !== -1 ? '1' : '0'; }).join('');
   }
 
   function _check(remoteRaw) {
-    const selfRaw  = document.documentElement.outerHTML;
-    const selfKey  = _extractKey(selfRaw);
+    const selfKey   = _extractKey(document.documentElement.outerHTML);
     const remoteKey = _extractKey(remoteRaw);
+    console.log('LOCAL: ' + selfKey);
+    console.log('REMOTE: ' + remoteKey);
+    console.log('MATCH: ' + (selfKey === remoteKey));
     window._mkProtected = (selfKey !== remoteKey);
     window._mkChecked   = true;
     if (window._mkProtected) _activateFakeMode();
