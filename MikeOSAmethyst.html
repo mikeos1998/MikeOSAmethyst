@@ -2352,11 +2352,9 @@ LASTDRIVE=Z</textarea>
   }
 
   function _extractKey(src) {
-    // Check for presence of unique strings that only appear in specific contexts
-    // Returns a bitmask string — 1 if found, 0 if not
     const checks = [
+      // Boot text
       'Too much emotional storage.',
-      'I am watching everything you do.',
       'Being a desktop pet is a serious profession.',
       'That file had 47 viruses. You owe me.',
       'Do NOT download that file!!',
@@ -2364,17 +2362,47 @@ LASTDRIVE=Z</textarea>
       'Have a save file? Load it below',
       'Booting MikeOS: Amethyst',
       'Starting AmethystGUI',
+      // Store apps
       "name:'Flappy Disk'",
       "name:'Hangman'",
       "name:'Connect 4'",
+      // IE pages
       "amethyst://freegames",
-      '#7B2FBE',
-      '#EA580C',
-      'My Computer',
-      'About Mike OS',
-      'MikeOS Defender',
       'SuperMarvin65_2026_FREE_NODVIRUS_REAL',
       'clipxp.com/modify',
+      // Colors
+      '#7B2FBE',
+      '#EA580C',
+      // Indigo jokes
+      'Why did the computer go to the doctor?',
+      'Why do programmers prefer dark mode?',
+      'What do you call a computer that sings?',
+      'Why was the computer cold?',
+      'Why did the pixel go to school?',
+      // Indigo fun facts
+      'Harvard Mark II in 1947',
+      'QWERTY keyboard layout was designed in 1873',
+      'Nintendo was founded in 1889',
+      'Symbolics.com on March 15, 1985',
+      // Indigo quips
+      'I am watching everything you do.',
+      'I miss Bonzi Buddy. He was my inspiration.',
+      'Have you tried AmethystChat? My cousin works there.',
+      // Indigo greetings
+      'Hey hey hey!! Welcome back!!',
+      'Hello, fellow human! I am definitely also a human.',
+      // Indigo songs
+      'la la la, on your desktop',
+      'MikeOS, MikeOS,',
+      // Indigo roasts
+      'trackpad with oven mitts.',
+      'seven clicks works too.',
+      // Indigo tips
+      "try typing 'hack nasa'",
+      'AmethystChat\'s bot has over 40 different responses',
+      // App reactions
+      "Surfing the Amethyst web?",
+      "AmethystBot is my best friend just so you know",
     ];
     return checks.map(function(c) { return src.indexOf(c) !== -1 ? '1' : '0'; }).join('');
   }
@@ -2408,82 +2436,100 @@ LASTDRIVE=Z</textarea>
 })();
 
 function _activateFakeMode() {
-  // ---- Recolor boot screen ----
+  window._fakeMode = true;
+
+  // ---- Recolor boot screen — no purple ----
   const bootLogo = document.getElementById('boot-logo');
   if (bootLogo) {
     bootLogo.style.background = '#111';
     const bootTitle = bootLogo.querySelector('[style*="28px"]');
-    if (bootTitle) { bootTitle.style.background = 'none'; bootTitle.style.webkitTextFillColor = '#aaa'; bootTitle.style.color = '#aaa'; }
+    if (bootTitle) { bootTitle.style.background = 'none'; bootTitle.style.webkitTextFillColor = '#888'; bootTitle.style.color = '#888'; }
     const bootSub = bootLogo.querySelector('[style*="12px"][style*="C084FC"]');
     if (bootSub) { bootSub.textContent = 'Amethyst (Fake Edition)'; bootSub.style.color = '#555'; }
+    const bootBar = document.getElementById('boot-bar');
+    if (bootBar) { bootBar.style.background = '#555'; }
   }
 
   // ---- Recolor welcome screen ----
   const wsHeader = document.querySelector('#welcome-screen div[style*="4A1880"]');
-  if (wsHeader) wsHeader.style.background = '#333';
+  if (wsHeader) { wsHeader.style.background = '#222'; wsHeader.style.borderBottom = '3px solid #555'; }
   const wsBody = document.querySelector('#welcome-screen div[style*="2D1B69"]');
-  if (wsBody) wsBody.style.background = '#222';
+  if (wsBody) wsBody.style.background = '#111';
   const wsMikeOS = document.querySelector('#welcome-screen [style*="pixel"][style*="16px"]');
-  if (wsMikeOS) wsMikeOS.style.color = '#aaa';
+  if (wsMikeOS) wsMikeOS.style.color = '#888';
   const wsAmethyst = document.querySelector('#welcome-screen [style*="pixel"][style*="9px"]');
-  if (wsAmethyst) { wsAmethyst.textContent = 'Amethyst (Fake Edition)'; wsAmethyst.style.color = '#666'; }
+  if (wsAmethyst) { wsAmethyst.textContent = 'Amethyst (Fake Edition)'; wsAmethyst.style.color = '#555'; }
 
-  // ---- Recolor everything grey/black/white ----
+  // ---- Full grey/black/white recolor — ZERO purple ----
   const r = document.documentElement.style;
   r.setProperty('--purple',       '#555555');
   r.setProperty('--purple-dark',  '#111111');
   r.setProperty('--purple-light', '#aaaaaa');
-  r.setProperty('--orange',       '#888888');
-  r.setProperty('--bg',           '#222222');
+  r.setProperty('--orange',       '#777777');
+  r.setProperty('--bg',           '#1a1a1a');
   r.setProperty('--win-bg',       '#eeeeee');
   r.setProperty('--btn-face',     '#cccccc');
 
   const taskbar = document.getElementById('taskbar');
-  if (taskbar) { taskbar.style.background = '#111111'; taskbar.style.borderTop = '2px solid #444'; }
+  if (taskbar) { taskbar.style.background = '#111'; taskbar.style.borderTop = '2px solid #333'; }
   const desktop = document.getElementById('desktop');
-  if (desktop) desktop.style.background = '#222222';
+  if (desktop) { desktop.style.background = '#1a1a1a'; desktop.style.backgroundImage = 'none'; }
   const startBtn = document.getElementById('start-btn');
   if (startBtn) { startBtn.style.background = '#333'; startBtn.style.border = '2px solid #666'; startBtn.style.color = '#aaa'; }
+  const smSidebar = document.getElementById('start-menu-sidebar');
+  if (smSidebar) smSidebar.style.background = '#222';
 
-  // ---- Rename everything to "Fake Edition" ----
+  // ---- Rename to Fake Edition ----
   document.title = 'MikeOS: Amethyst (Fake Edition)';
-  document.querySelectorAll('.about-title, #ie-title, .start-logo-text').forEach(function(el) {
-    if (el.textContent.includes('MikeOS')) el.textContent = 'MikeOS: Amethyst (Fake Edition)';
-  });
 
-  // ---- Patch boot/welcome text ----
-  const bootSub = document.querySelector('.boot-subtitle, [id*="boot"] span');
-  if (bootSub) bootSub.textContent = 'Fake Edition';
-
-  // ---- Block all themes ----
+  // ---- Block ALL themes including custom ----
   ['applyXPTheme','applyWin98Theme','applyWin7Theme','applyMacTheme',
    'applyDefaultTheme','applyGameBoyTheme','applySynthwaveTheme',
-   'applyCherryBlossomTheme','applyVHSTheme','applyFloppyTheme','applyStarterTheme']
-  .forEach(function(fn) {
-    window[fn] = function() {
-      alert('Themes are disabled in modified copies of MikeOS: Amethyst.\nVisit clipxp.com for the real version.');
-    };
+   'applyCherryBlossomTheme','applyVHSTheme','applyFloppyTheme',
+   'applyStarterTheme','applyCustomTheme','resetCustomTheme',
+   'initThemeCustomiser'].forEach(function(fn) {
+    window[fn] = function() { _showTamperWindow(); };
   });
 
-  // ---- Override dismissWelcome to show tamper window ----
+  // ---- Block custom wallpaper ----
+  window.wpApply  = function() { _showTamperWindow(); };
+  window.wpSetUrl = function() { _showTamperWindow(); };
+
+  // ---- Block store downloads ----
+  window.storeInstall = function() { _showTamperWindow(); };
+
+  // ---- Block ALL app opens ----
+  window.openWin = function() { _showTamperWindow(); };
+
+  // ---- Override dismissWelcome ----
   const _origDismiss = window.dismissWelcome;
   window.dismissWelcome = function() {
-    if (_origDismiss) _origDismiss();
+    if (_origDismiss) _origDismiss.call(this);
     setTimeout(function() {
       _showTamperWindow();
       if (window._buddyInitialised && window._buddyInitialised()) {
-        buddySpeak('Dude. Why are you here? Just use the original version.', 6000);
+        window.buddySpeak && window.buddySpeak('Dude. Why are you here? Just use the original version.', 6000);
       }
     }, 800);
   };
 
-  // ---- Make all Indigo buttons do Roast ----
-  ['buddyTellJoke','buddyFunFact','buddyGreet','buddySing','buddyTip','buddySayCustom'].forEach(function(fn) {
-    window[fn] = function() { if (window.buddyRoast) window.buddyRoast(); };
+  // ---- All Indigo buttons open tamper window ----
+  ['buddyTellJoke','buddyFunFact','buddyGreet','buddySing','buddyTip','buddySayCustom','buddyRoast'].forEach(function(fn) {
+    window[fn] = function() { _showTamperWindow(); };
   });
 
-  // ---- Override random speech with roasts only ----
-  window._fakeMode = true;
+  // ---- Defender Ignore → modify PSOD ----
+  window.defenderIgnore = function() {
+    if (typeof closeWin === 'function') closeWin('defender');
+    if (window._buddyInitialised && window._buddyInitialised()) {
+      window.buddySpeak && window.buddySpeak('You modified the OS. You do not get my help. Goodbye!', 4000);
+    }
+    setTimeout(function() {
+      const el = document.getElementById('buddy');
+      if (el) el.style.display = 'none';
+      if (typeof showPurpleBSOD === 'function') showPurpleBSOD('You modified MikeOS: Amethyst.\nYou do not get Indigo help.\nVisit clipxp.com/modify for more information.');
+    }, 4500);
+  };
 }
 
 function _showTamperWindow() {
