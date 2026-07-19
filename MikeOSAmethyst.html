@@ -2437,6 +2437,7 @@ LASTDRIVE=Z</textarea>
 
 function _activateFakeMode() {
   window._fakeMode = true;
+  const _realOpenWin = window.openWin;
 
   // ---- Recolor boot screen — no purple ----
   const bootLogo = document.getElementById('boot-logo');
@@ -2498,8 +2499,16 @@ function _activateFakeMode() {
   // ---- Block store downloads ----
   window.storeInstall = function() { _showTamperWindow(); };
 
-  // ---- Block ALL app opens ----
-  window.openWin = function() { _showTamperWindow(); };
+  // ---- Block ALL app opens except IE, Store and Indigo ----
+  const _allowedInFakeMode = ['ie', 'store', 'buddy'];
+  window.openWin = function(id) {
+    if (_allowedInFakeMode.indexOf(id) !== -1) {
+      // Call the real openWin — store it before overriding
+      _realOpenWin(id);
+    } else {
+      _showTamperWindow();
+    }
+  };
 
   // ---- Override dismissWelcome ----
   const _origDismiss = window.dismissWelcome;
