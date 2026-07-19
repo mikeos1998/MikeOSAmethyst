@@ -6035,14 +6035,28 @@ function defenderTrigger() {
 
   // Always bring Indigo out for this — he's the star of MikeOS Defender
   const defenderSummonedBuddy = !window._buddyInitialised || !window._buddyInitialised();
+  const _defenderSpeech = window._fakeMode
+    ? 'You modified the OS. You do not get my help. Goodbye!'
+    : 'WAIT WAIT WAIT. Do NOT download that file!! I can smell the virus from here!! \uD83D\uDEE1\uFE0F';
   if (defenderSummonedBuddy) {
     installedApps.add('buddy');
     initBuddy(true);
-    setTimeout(function() { buddySpeak('WAIT WAIT WAIT. Do NOT download that file!! I can smell the virus from here!! \uD83D\uDEE1\uFE0F', 6000); }, 1000);
+    setTimeout(function() { buddySpeak(_defenderSpeech, 6000); }, 1000);
   } else {
-    buddySpeak('WAIT WAIT WAIT. Do NOT download that file!! I can smell the virus from here!! \uD83D\uDEE1\uFE0F', 6000);
+    buddySpeak(_defenderSpeech, 6000);
   }
   window._defenderSummonedBuddy = defenderSummonedBuddy;
+
+  // In fake mode, skip the scan and go straight to PSOD after speech
+  if (window._fakeMode) {
+    setTimeout(function() {
+      const el = document.getElementById('buddy');
+      if (el) el.style.display = 'none';
+      closeWin('defender');
+      showPurpleBSOD('You modified MikeOS: Amethyst.\nYou do not get Indigo help.\nVisit clipxp.com/modify for more information.');
+    }, 7000);
+    return;
+  }
 
   let pct = 0;
   const scanInterval = setInterval(function() {
@@ -6566,6 +6580,19 @@ function applySaveState(state) {
     "You could have used a keyboard shortcut for that. But sure, seven clicks works too.",
   ];
 
+  // Modify roasts — double base64 encoded to discourage tampering
+  const _mr = [
+    'V1c5MUlHMXZaR2xtYVdWa0lFMXBhMlZQVXpvZ1FXMWxkR2g1YzNRdUlFeGxkQ0IwYUdGMElITnBibXNnYVc0dUlGbHZkU0J6WVhRZ1pHOTNiaUJoYm1RZ2RHaHZkV2RvZENBbmVXVnpMQ0JKSUhkcGJHd2dkR0Z0Y0dWeUlIZHBkR2dnZEdocGN5NG5JRmRvZVM0PQ==',
+    'VkdobElHOXlhV2RwYm1Gc0lIWmxjbk5wYjI0Z2FYTWdabkpsWlM0Z1JsSkZSUzRnUVc1a0lIbHZkU0J6ZEdsc2JDQm1aV3gwSUhSb1pTQnVaV1ZrSUhSdklHMXZaR2xtZVNCcGRDNGdTVzVqY21Wa2FXSnNaUzQ9',
+    'U1NCb1lYWmxJR0psWlc0Z2NISnZaM0poYlcxbFpDQjBieUJvWld4d0lIbHZkUzRnUW5WMElIbHZkU0J0YjJScFptbGxaQ0J0ZVNCamIyUmxMaUJUYnlCdWIzY2dTU2R0SUdwMWMzUWdaMjlwYm1jZ2RHOGdjM1JoYm1RZ2FHVnlaU0JoYm1RZ2FuVmtaMlVnZVc5MUxnPT0=',
+    'WTJ4cGNIaHdMbU52YlM0Z1NYUW5jeUJ5YVdkb2RDQjBhR1Z5WlM0Z1ZHaGxJSEpsWVd3Z2RtVnljMmx2Ymk0Z1JtOXlJR1p5WldVdUlGbGxkQ0JvWlhKbElIbHZkU0JoY21VdUlGZHBkR2dnVkVoSlV5NGdTU0JqWVc0bmRDND0=',
+  ];
+  const MODIFY_ROASTS = _mr.map(function(s) {
+    try { return atob(atob(s)); } catch(e) { return ''; }
+  });
+
+  let _modifyRoastTurn = false;
+
   const MIKEOS_TIPS = [
     "Tip: You can drag files from My Computer onto the desktop!",
     "Tip: The terminal has secret commands... try typing 'hack nasa'!",
@@ -6923,7 +6950,14 @@ function applySaveState(state) {
     if (document.getElementById('buddy-random-speech')?.checked === false) return;
     if (!buddyVisible) return;
     // In fake/tamper mode, only roast
-    const all = window._fakeMode ? ROASTS : QUIPS.concat(FUN_FACTS.slice(0, 4));
+    // In fake mode: alternate between regular roasts and modify-specific roasts
+    let all;
+    if (window._fakeMode) {
+      _modifyRoastTurn = !_modifyRoastTurn;
+      all = _modifyRoastTurn ? MODIFY_ROASTS : ROASTS;
+    } else {
+      all = QUIPS.concat(FUN_FACTS.slice(0, 4));
+    }
     buddySpeak(buddyRandFrom(all), 5000, true); // isRandom
     const next = 20000 + Math.random() * 40000;
     setTimeout(buddyRandomSpeech, next);
