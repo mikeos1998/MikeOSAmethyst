@@ -2496,14 +2496,21 @@ function _activateFakeMode() {
   window.wpApply  = function() { _showTamperWindow(); };
   window.wpSetUrl = function() { _showTamperWindow(); };
 
-  // ---- Block store downloads ----
-  window.storeInstall = function() { _showTamperWindow(); };
+  // ---- Block store downloads except Indigo ----
+  window.storeInstall = function(nameKey, appId) {
+    if (appId === 'buddy') {
+      installedApps.add('buddy');
+      addStoreDesktopIcon('buddy');
+      addStoreStartItem('buddy');
+    } else {
+      _showTamperWindow();
+    }
+  };
 
-  // ---- Block ALL app opens except IE, Store and Indigo ----
-  const _allowedInFakeMode = ['ie', 'store', 'buddy'];
+  // ---- Block ALL app opens except IE, Store, Indigo and Defender ----
+  const _allowedInFakeMode = ['ie', 'store', 'buddy', 'defender'];
   window.openWin = function(id) {
     if (_allowedInFakeMode.indexOf(id) !== -1) {
-      // Call the real openWin — store it before overriding
       _realOpenWin(id);
     } else {
       _showTamperWindow();
@@ -6980,7 +6987,7 @@ function applySaveState(state) {
     buddyPickNewTarget();
     if (!skipIntro) {
       setTimeout(function() {
-        buddySpeak("Hey!! I'm Indigo! \uD83D\uDC9C Nice to meet ya!", 4000);
+        buddySpeak(window._fakeMode ? 'Dude. Why are you here? Just use the original version.' : "Hey!! I'm Indigo! \uD83D\uDC9C Nice to meet ya!", 5000);
       }, 1200);
     }
     setTimeout(buddyRandomSpeech, 25000);
